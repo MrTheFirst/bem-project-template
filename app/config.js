@@ -18,9 +18,11 @@ module.exports = {
 	},
 
 	extnames: {
-		templates: '.pug',
-		scripts: '.js',
-		styles: '.scss'
+    templates: '.html',
+    styles: '.css',
+    scripts: '.js',
+    json: '.json',
+    readme: '.md'
 	},
 
 	dist: {

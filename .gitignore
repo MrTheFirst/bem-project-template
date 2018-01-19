@@ -3,7 +3,7 @@ Thumbs.db
 Desktop.ini
 .DS_Store*
 ehthumbs.db
-
+.idea
 # Logs
 logs
 *.log

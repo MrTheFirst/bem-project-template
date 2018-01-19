@@ -8,7 +8,7 @@ module.exports = {
 
 	app: {
 		lang: 'en',
-		name: 'Site',
+		name: 'BEM Template',
 		description: 'Description',
 		domain: 'google.com',
 		preloader: false,
@@ -33,8 +33,10 @@ module.exports = {
 
 	extnames: {
 		templates: '.html',
+    styles: '.css',
 		scripts: '.js',
-		styles: '.css'
+    json: '.json',
+		readme: '.md'
 	},
 
 	dist: {

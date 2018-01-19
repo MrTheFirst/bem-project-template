@@ -522,11 +522,12 @@ core.readBlocks = () => {
 core.addFile = ( data, type ) => {
 
 	let extnames = {
-		json: 'json',
+		json: core.config.extnames.json,
 		style: core.config.extnames.styles,
 		script: core.config.extnames.scripts,
 		template: core.config.extnames.templates,
-		page: core.config.extnames.templates
+		page: core.config.extnames.templates,
+		readme: core.config.extnames.readme
 	};
 
 	data = Array.isArray( data ) ? data : [data];
@@ -538,7 +539,7 @@ core.addFile = ( data, type ) => {
 		let block = core.bem.getBlock( val ),
 			content = core.config.add[ type ] || '',
 			dir = ( type === 'page' ) ? core.path.app( 'pages' ) : core.path.blocks( core.path.join( core.config.mainLevel, block ) ),
-			name = ( type === 'json' ) ? 'data' : val,
+			name = core.getNewFilename(type, val),
 			file = core.path.join( dir, name + extnames[ type ] ),
 			comment = ( name === block ) ? `\n/*!*\n * ${block.charAt(0).toUpperCase() + block.slice(1)}\n */\n` : '';
 
@@ -553,6 +554,23 @@ core.addFile = ( data, type ) => {
 
 };
 
+// Get name for new file
+
+core.getNewFilename = (type, val) => {
+	let filename = '';
+  switch(type) {
+    case 'json':
+      filename = 'data';
+      break;
+    case 'readme':
+      filename = 'README';
+      break;
+    default:
+      filename = val;
+      break
+  }
+  return filename
+};
 
 // Add block
 
@@ -584,7 +602,7 @@ core.addBlock = ( data, content = false ) => {
 
 				}
 
-				if ( [ 'json', 'style', 'script', 'template' ].indexOf( val ) !== -1 ) core.addFile( block, val );
+				if ( [ 'json', 'style', 'script', 'template', 'readme' ].indexOf( val ) !== -1 ) core.addFile( block, val );
 
 			});
 	});
