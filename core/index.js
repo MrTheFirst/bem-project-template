@@ -1,20 +1,14 @@
 
 'use strict';
 
-
 // Require
-
 const fs = require( 'fs' );
 const path = require( 'path' );
 
-
 // Core
-
 const core = {};
 
-
 // Config
-
 core.config = {};
 
 try {
@@ -57,7 +51,6 @@ try {
 
 } catch(e) { console.log(e); }
 
-
 // Paths
 
 let paths = {
@@ -69,8 +62,8 @@ let paths = {
 	temp: 'core/temp',
 	app: 'app',
 	blocks: 'app/blocks',
-	pages: 'app/pages'
-
+	pages: 'app/pages',
+	assets: 'app/assets'
 };
 
 core.path = {
@@ -80,7 +73,6 @@ core.path = {
 
 	relative: ( one = '', two = '' ) => path.relative( one, two ),
 	join: ( one = '', two = '', three = '', four = '' ) => path.join( one, two, three, four )
-
 };
 
 Object.keys( paths ).forEach( ( key ) => {
@@ -95,7 +87,6 @@ Object.keys( paths ).forEach( ( key ) => {
 	core.path[ key.toUpperCase() ] = core.path[key]();
 
 });
-
 Object.keys( core.config.dist ).forEach( ( key ) => {
 
 	if ( typeof key !== 'string' ) return;
@@ -106,9 +97,7 @@ Object.keys( core.config.dist ).forEach( ( key ) => {
 
 });
 
-
 // Add temp dir
-
 try {
 
 	fs.lstatSync( core.path.TEMP );
@@ -123,45 +112,31 @@ try {
 
 }
 
-
 // Levels
-
 core.levels = [];
 
-
 // Tree
-
 core.tree = {};
 
-
 // Used
-
-core.used = {};
-
+core.used = {
+	fonts: core.path.assets( '/fonts/**/*.{eot,svg,ttf,woff,woff2}')
+};
 
 // Environment
-
 core.isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV == 'development';
 
-
 // Port
-
 core.port = process.env.port ? process.env.port : 3000;
 
-
 // Zip
-
 core.zipDev = !!process.env.ZIP_DEV;
-
-
 
 //
 // Helpers
 //
 
-
 // Bem helpers
-
 core.bem = {
 
 	isBlock: function( cls ) {
@@ -188,9 +163,7 @@ core.bem = {
 
 };
 
-
 // Get date
-
 core.getDate = () => {
 
 	let now = new Date(),
@@ -204,19 +177,13 @@ core.getDate = () => {
 
 };
 
-
 // Get extname
-
 core.getExtname = ( file ) => path.extname( file );
 
-
 // Get basename
-
 core.getBasename = ( file, extname = false ) => extname ? path.basename( file ) : path.basename( file, path.extname( file ) );
 
-
 // Check file
-
 core.checkFile = ( file ) => {
 
 	let check = true;
@@ -230,9 +197,7 @@ core.checkFile = ( file ) => {
 	return check;
 };
 
-
 // Add dir
-
 core.addDir = ( dir ) => {
 
 	try {
@@ -243,9 +208,7 @@ core.addDir = ( dir ) => {
 
 };
 
-
 // Check dir
-
 core.isDirectory = ( dir ) => {
 
 	let exist = false;
@@ -260,9 +223,7 @@ core.isDirectory = ( dir ) => {
 
 };
 
-
 // Read dir
-
 core.readDir = ( dir ) => {
 
 	let array = [];
@@ -277,11 +238,8 @@ core.readDir = ( dir ) => {
 
 };
 
-
 // Write file
-
 core.writeFile = ( file, content ) => {
-
 	try {
 
 		fs.writeFileSync( file, content, 'utf8' );
@@ -290,9 +248,7 @@ core.writeFile = ( file, content ) => {
 
 };
 
-
 // Read file
-
 core.readFile = ( file ) => {
 
 	let data = '';
@@ -307,9 +263,7 @@ core.readFile = ( file ) => {
 
 };
 
-
 // Ignore node
-
 core.isIgnoreNode = ( node ) => {
 
 	let list = core.config.autoCreateIgnore;
@@ -330,15 +284,11 @@ core.isIgnoreNode = ( node ) => {
 
 };
 
-
-
 //
 // For tasks
 //
 
-
 // Error handler
-
 core.errorHandler = ( err ) => {
 
 	console.log( err.toString() );
@@ -349,7 +299,6 @@ core.errorHandler = ( err ) => {
 
 
 // Pretty fix
-
 core.prettyFix = ( file ) => {
 
 	let html = file.contents.toString();
@@ -370,7 +319,6 @@ core.prettyFix = ( file ) => {
 
 
 // Resolver url
-
 core.sassResolver = function( url, prev, done ) {
 
 	let file;
@@ -406,9 +354,8 @@ core.sassResolver = function( url, prev, done ) {
 
 
 // Edit url
-
 core.editUrl = ( url ) => {
-
+	url = url.originUrl;
 	if ( ! url || /^(?:https?\:)?\/\//i.test( url ) || url.indexOf( 'data:' ) === 0 ) return;
 
 	let array = url.split( path.sep ),
@@ -434,14 +381,12 @@ core.editUrl = ( url ) => {
 	}
 
 	if ( core.used.imgs.indexOf( asset ) === -1 ) core.used.imgs.push( asset );
-
-	return path.join( path.relative( core.path.STYLES, core.path.IMG ), `${block}_${name}` );
+		return path.join( path.relative( core.path.STYLES, core.path.IMG ), `${block}_${name}` );
 
 };
 
 
 // Get entry
-
 core.getEntry = () => {
 
 	let entry = {};
@@ -469,7 +414,6 @@ core.getEntry = () => {
 
 
 // Read blocks
-
 core.readBlocks = () => {
 
 	let map = '', data = {};
@@ -518,7 +462,6 @@ core.readBlocks = () => {
 
 
 // Add file
-
 core.addFile = ( data, type ) => {
 
 	let extnames = {
@@ -573,7 +516,6 @@ core.getNewFilename = (type, val) => {
 };
 
 // Add block
-
 core.addBlock = ( data, content = false ) => {
 
 	data = Array.isArray( data ) ? data : [data];
@@ -606,12 +548,10 @@ core.addBlock = ( data, content = false ) => {
 
 			});
 	});
-
 };
 
 
 // Edit time
-
 core.editTime = ( file ) => {
 
 	if ( ! core.checkFile( file ) ) return;
@@ -626,7 +566,6 @@ core.editTime = ( file ) => {
 
 
 // Change template
-
 core.changeTemplate = ( file ) => {
 
 	let name = core.getBasename( file );
@@ -643,6 +582,5 @@ core.changeTemplate = ( file ) => {
 
 
 // Export
-
 module.exports = core;
 

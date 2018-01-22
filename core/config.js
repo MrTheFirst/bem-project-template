@@ -8,7 +8,7 @@ module.exports = {
 
 	app: {
 		lang: 'en',
-		name: 'BEM Template',
+		name: 'Site',
 		description: 'Description',
 		domain: 'google.com',
 		preloader: false,
@@ -21,7 +21,7 @@ module.exports = {
 		cssBundles: false,
 		jsBundles: false,
 		sourcemap: false,
-		babel: false
+		babel: true
 	},
 
 	levels: {
@@ -32,11 +32,9 @@ module.exports = {
 	mainLevel: 'develop',
 
 	extnames: {
-		templates: '.html',
-    styles: '.css',
+		templates: '.pug',
 		scripts: '.js',
-    json: '.json',
-		readme: '.md'
+		styles: '.scss'
 	},
 
 	dist: {

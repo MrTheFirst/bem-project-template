@@ -1,0 +1,10 @@
+{{#shapes}}
+.{{base}} {
+  display: inline-block;
+  fill: currentColor;
+  font-size:{{height.inner}}*1px;
+  width:{{width.inner}}*1px;
+  min-width:{{width.inner}}*1px;
+  height: 1em;
+}
+{{/shapes}}

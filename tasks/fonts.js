@@ -12,14 +12,15 @@ const gulp = require( 'gulp' );
 module.exports = ( task, core ) => {
 
 
-	task.src = core.isDevelopment ? [ core.path.blocks( '*/*/fonts/*.{eot,svg,ttf,woff,woff2}' ) ] : core.used.fonts;
+	// task.src = core.isDevelopment ? [ core.path.assets( '*/*/fonts/*.{eot,svg,ttf,woff,woff2}' ) ] : core.used.fonts;
+	task.src = core.path.assets( '/fonts/**/*.{eot,svg,ttf,woff,woff2}' );
 
 	task.dest = ( file ) => {
 
 		let array = file.path.split( core.path.SEP );
 
 			file.path = core.path.join( file.base, array[ array.length - 1 ] );
-			
+
 			return core.path.FONTS;
 	};
 

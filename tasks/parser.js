@@ -1,393 +1,389 @@
-
 'use strict';
 
 
 // Require
 
-const htmlparser = require( 'htmlparser2' );
+const htmlparser = require('htmlparser2');
 
 
 // Export
 
-module.exports = ( task, core ) => {
+module.exports = (task, core) => {
 
 
-	core.used.blocks = [];
-	core.used.styles = [];
-	core.used.scripts = [];
-	core.used.assets = [];
-	core.used.symbol = [];
+  core.used.blocks = [];
+  core.used.styles = [];
+  core.used.scripts = [];
+  core.used.assets = [];
+  core.used.symbol = [];
 
 
-	// Parser
+  // Parser
 
-	let parser = {
+  let parser = {
 
-		pages: {},
-		parsed: {},
+    pages: {},
+    parsed: {},
 
-		node: function( page, node ) {
+    node: function (page, node) {
 
-			if ( this.pages[page][node].already ) return;
+      if (this.pages[page][node].already) return;
 
-			this.pages[page][node].already = true;
+      this.pages[page][node].already = true;
 
-			if ( ! this.parsed[page] ) this.parsed[page] = {};
+      if (!this.parsed[page]) this.parsed[page] = {};
 
-			if ( this.pages[page][node]['mix'].length > 0 ) {
+      if (this.pages[page][node]['mix'].length > 0) {
 
-				this.pages[page][node]['mix'].forEach( ( mixNode ) => this.node( page, mixNode ) );
+        this.pages[page][node]['mix'].forEach((mixNode) => this.node(page, mixNode));
 
-			}
+      }
 
-			return this.parsed[page][node] = this.pages[page][node]['mod'];
-		},
+      return this.parsed[page][node] = this.pages[page][node]['mod'];
+    },
 
-		attr: function( attr ) {
+    attr: function (attr) {
 
-			if ( ! attr || attr.indexOf( 'data:' ) === 0 || /^(?:https?\:)?\/\//i.test( attr ) || attr.indexOf( core.config.dist.static + core.path.SEP ) === -1 ) return;
+      if (!attr || attr.indexOf('data:') === 0 || /^(?:https?\:)?\/\//i.test(attr) || attr.indexOf(core.config.dist.static + core.path.SEP) === -1) return;
 
-			attr = core.path.relative( core.config.dist.static, attr );
+      attr = core.path.relative(core.config.dist.static, attr);
 
-			let block = attr.split( core.path.SEP )[0];
+      let block = attr.split(core.path.SEP)[0];
 
-			attr = attr.replace( block, block + core.path.SEP + 'assets' ).replace( / 2x| 3x| 4x/g, '' );
+      attr = attr.replace(block, block + core.path.SEP + 'assets').replace(/ 2x| 3x| 4x/g, '');
 
-			let file = core.path.blocks( `*/${attr}` );
+      let file = core.path.blocks(`*/${attr}`);
 
-			if ( core.used.assets.indexOf( file ) === -1 ) core.used.assets.push( file );
+      if (core.used.assets.indexOf(file) === -1) core.used.assets.push(file);
 
-		}
+    }
 
-	};
+  };
 
 
-	// Parse HTML files
+  // Parse HTML files
 
-	core.readDir( core.path.DIST ).forEach( ( file ) => {
+  core.readDir(core.path.DIST).forEach((file) => {
 
-		if ( core.getExtname( file ) !== '.html' ) return;
+    if (core.getExtname(file) !== '.html') return;
 
-		let name = core.getBasename( file ),
-			code = core.readFile( core.path.dist( file ) );
+    let name = core.getBasename(file),
+      code = core.readFile(core.path.dist(file));
 
-		if ( ! parser.pages[name]  ) parser.pages[name] = {};
-		if ( ! parser.pages['app'] ) parser.pages['app'] = {};
+    if (!parser.pages[name]) parser.pages[name] = {};
+    if (!parser.pages['app']) parser.pages['app'] = {};
 
-		let newParser = new htmlparser.Parser({
-			onopentag: function( tag, attrs ) {
+    let newParser = new htmlparser.Parser({
+      onopentag: function (tag, attrs) {
 
-				if ( tag === 'script' ) {
+        if (tag === 'script') {
 
-					if ( ! attrs.src || /^(?:https?\:)?\/\//i.test( attrs.src ) ) return;
-					
-					let file = core.getBasename( attrs.src, true );
+          if (!attrs.src || /^(?:https?\:)?\/\//i.test(attrs.src)) return;
 
-					if ( file !== 'app.js' && core.used.scripts.indexOf( file ) === -1  ) core.used.scripts.push( file );
+          let file = core.getBasename(attrs.src, true);
 
-					return;
-				}
+          if (file !== 'app.js' && core.used.scripts.indexOf(file) === -1) core.used.scripts.push(file);
 
-				if ( tag === 'link' ) {
+          return;
+        }
 
-					if ( ( attrs.rel && attrs.rel !== 'stylesheet' ) || /^(?:https?\:)?\/\//i.test( attrs.href ) ) return;
-					
-					let file = core.getBasename( attrs.href, true );
+        if (tag === 'link') {
 
-					if ( file !== 'app.css' && core.used.styles.indexOf( file ) === -1  ) core.used.styles.push( file );
+          if ((attrs.rel && attrs.rel !== 'stylesheet') || /^(?:https?\:)?\/\//i.test(attrs.href)) return;
 
-					return;
-				}
+          let file = core.getBasename(attrs.href, true);
 
-				if ( tag === 'use' ) {
+          if (file !== 'app.css' && core.used.styles.indexOf(file) === -1) core.used.styles.push(file);
 
-					let id = attrs['xlink:href'],
-						icon = id ? id.split( '__' )[1] : '',
-						block = id ? id.split( '__' )[0] : '',
-						file;
+          return;
+        }
 
-					if ( ! icon || ! block ) return;
+        if (tag === 'use') {
 
-					block = block.charAt(0) === '#' ? block.slice(1) : block;
-					file = core.path.blocks( `*/${block}/img/symbol/${icon}.svg` );
+          let id = attrs['xlink:href'],
+            icon = id ? id.split('__')[1] : '',
+            block = id ? id.split('__')[0] : '',
+            file;
 
-					if ( core.used.symbol.indexOf( file ) === -1  ) core.used.symbol.push( file );
+          if (!icon || !block) return;
 
-					return;
-				}
+          block = block.charAt(0) === '#' ? block.slice(1) : block;
+          file = core.path.blocks(`*/${block}/img/symbol/${icon}.svg`);
 
-				core.config.assetsAttr.forEach( ( attr ) => parser.attr( attrs[ attr ] ) );
+          if (core.used.symbol.indexOf(file) === -1) core.used.symbol.push(file);
 
-				let mix = [], classes = attrs.class ? attrs.class.split( ' ' ) : [];
+          return;
+        }
 
-				if ( classes.length < 1 ) return;
+        core.config.assetsAttr.forEach((attr) => parser.attr(attrs[attr]));
 
-				classes.forEach( ( cls, i ) => {
+        let mix = [], classes = attrs.class ? attrs.class.split(' ') : [];
 
-					cls = cls.trim();
+        if (classes.length < 1) return;
 
-					let val, isModifier;
+        classes.forEach((cls, i) => {
 
-					if ( core.bem.isBlock( cls ) && core.used.blocks.indexOf( cls ) === -1 ) core.used.blocks.push( cls );
+          cls = cls.trim();
 
-					if ( core.bem.isBlock( cls ) || core.bem.isElement( cls ) ) {
-						val = cls;
-						isModifier = false;
-					} else {
-						val = core.bem.delModifier( cls );
-						isModifier = true;
-					}
+          let val, isModifier;
 
-					if ( ! parser.pages[name][val] ) parser.pages[name][val] = { mod: [], mix: [] };
-					if ( ! parser.pages['app'][val] ) parser.pages['app'][ val ] = { mod: [], mix: [] };
+          if (core.bem.isBlock(cls) && core.used.blocks.indexOf(cls) === -1) core.used.blocks.push(cls);
 
-					if ( isModifier ) {
+          if (core.bem.isBlock(cls) || core.bem.isElement(cls)) {
+            val = cls;
+            isModifier = false;
+          } else {
+            val = core.bem.delModifier(cls);
+            isModifier = true;
+          }
 
-						let elMod = parser.pages[name][val]['mod'];
-						let gMod = parser.pages['app'][val]['mod'];
+          if (!parser.pages[name][val]) parser.pages[name][val] = {mod: [], mix: []};
+          if (!parser.pages['app'][val]) parser.pages['app'][val] = {mod: [], mix: []};
 
-						if ( elMod.indexOf( cls ) === -1 ) elMod.push( cls );
-						if ( gMod.indexOf( cls ) === -1 ) gMod.push( cls );
+          if (isModifier) {
 
-					} else {
+            let elMod = parser.pages[name][val]['mod'];
+            let gMod = parser.pages['app'][val]['mod'];
 
-						let elMix = parser.pages[name][val]['mix'];
-						let gMix = parser.pages['app'][val]['mix'];
+            if (elMod.indexOf(cls) === -1) elMod.push(cls);
+            if (gMod.indexOf(cls) === -1) gMod.push(cls);
 
-						if ( i !== 0 ) {
+          } else {
 
-							mix.forEach( ( node ) => {
-								if ( elMix.indexOf( node ) === -1 ) elMix.push( node );
-								if ( gMix.indexOf( node ) === -1 ) gMix.push( node );
-							});
+            let elMix = parser.pages[name][val]['mix'];
+            let gMix = parser.pages['app'][val]['mix'];
 
-						}
+            if (i !== 0) {
 
-						if ( mix.indexOf( cls ) === -1 ) mix.push( cls );
+              mix.forEach((node) => {
+                if (elMix.indexOf(node) === -1) elMix.push(node);
+                if (gMix.indexOf(node) === -1) gMix.push(node);
+              });
 
-					}
+            }
 
-				});
+            if (mix.indexOf(cls) === -1) mix.push(cls);
 
-			}
-		});
+          }
 
-		newParser.write( code );
-		newParser.end();
+        });
 
-	});
+      }
+    });
 
+    newParser.write(code);
+    newParser.end();
 
-	// Parse nodes
+  });
 
-	Object.keys( parser.pages ).forEach( ( page ) => {
-		Object.keys( parser.pages[page] ).forEach( ( node ) => parser.node( page, node ) );
-	});
 
+  // Parse nodes
 
-	// Add symbol block
+  Object.keys(parser.pages).forEach((page) => {
+    Object.keys(parser.pages[page]).forEach((node) => parser.node(page, node));
+  });
 
-	if ( ! core.config.blocks.app.symbol && ( core.isDevelopment || core.used.symbol.length > 0 ) ) core.config.blocks.app.symbol = '';
 
+  // Add symbol block
 
-	// Add blocks from config
+  if (!core.config.blocks.app.symbol && (core.isDevelopment || core.used.symbol.length > 0)) core.config.blocks.app.symbol = '';
 
-	Object.keys( core.config.blocks ).forEach( ( page ) => {
 
-		if ( ! parser.parsed[page] ) return;
+  // Add blocks from config
 
-		Object.keys( core.config.blocks[page] ).forEach( ( node ) => {
+  Object.keys(core.config.blocks).forEach((page) => {
 
-			let array = Array.isArray( core.config.blocks[page][node] ) ? core.config.blocks[page][node] : [ typeof core.config.blocks[page][node] === 'string' ? core.config.blocks[page][node] : '' ];
+    if (!parser.parsed[page]) return;
 
-			if ( ! parser.parsed[page][node] ) {
+    Object.keys(core.config.blocks[page]).forEach((node) => {
 
-				parser.parsed[page][node] = array;
+      let array = Array.isArray(core.config.blocks[page][node]) ? core.config.blocks[page][node] : [typeof core.config.blocks[page][node] === 'string' ? core.config.blocks[page][node] : ''];
 
-			} else {
+      if (!parser.parsed[page][node]) {
 
-				array.forEach( ( key ) => {
-					if ( parser.parsed[page][node].indexOf( key ) === -1 ) parser.parsed[page][node].push( key );
-				});
+        parser.parsed[page][node] = array;
 
-			}
+      } else {
 
-		});
+        array.forEach((key) => {
+          if (parser.parsed[page][node].indexOf(key) === -1) parser.parsed[page][node].push(key);
+        });
 
-	});
+      }
 
-	core.tree = parser.parsed;
+    });
 
+  });
 
-	// Add styles from config
+  core.tree = parser.parsed;
 
-	let usedStyles = Array.isArray( core.config.use.styles ) ? core.config.use.styles : [core.config.use.styles];
 
-	usedStyles.forEach( ( style ) => {
+  // Add styles from config
 
-		if ( typeof style !== 'string' ) return;
+  let usedStyles = Array.isArray(core.config.use.styles) ? core.config.use.styles : [core.config.use.styles];
 
-		if ( style !== 'app.css' && core.used.styles.indexOf( style ) === -1  ) core.used.styles.push( style );
+  usedStyles.forEach((style) => {
 
-	});
+    if (typeof style !== 'string') return;
 
+    if (style !== 'app.css' && core.used.styles.indexOf(style) === -1) core.used.styles.push(style);
 
-	// Add scripts from config
+  });
 
-	let usedScripts = Array.isArray( core.config.use.scripts ) ? core.config.use.scripts : [core.config.use.scripts];
 
-	usedScripts.forEach( ( script ) => {
+  // Add scripts from config
 
-		if ( typeof script !== 'string' ) return;
+  let usedScripts = Array.isArray(core.config.use.scripts) ? core.config.use.scripts : [core.config.use.scripts];
 
-		if ( script !== 'app.js' && core.used.scripts.indexOf( script ) === -1  ) core.used.scripts.push( script );
+  usedScripts.forEach((script) => {
 
-	});
+    if (typeof script !== 'string') return;
 
+    if (script !== 'app.js' && core.used.scripts.indexOf(script) === -1) core.used.scripts.push(script);
 
-	// Add symbol from config
+  });
 
-	let usedSymbol = Array.isArray( core.config.use.symbol ) ? core.config.use.symbol : [core.config.use.symbol];
 
-	usedSymbol.forEach( ( id ) => {
+  // Add symbol from config
 
-		if ( typeof id !== 'string' ) return;
+  let usedSymbol = Array.isArray(core.config.use.symbol) ? core.config.use.symbol : [core.config.use.symbol];
 
-		let icon = id ? id.split( '__' )[1] : '',
-			block = id ? id.split( '__' )[0] : '',
-			file;
+  usedSymbol.forEach((id) => {
 
-			if ( ! icon || ! block ) return;
+    if (typeof id !== 'string') return;
 
-			block = block.charAt(0) === '#' ? block.slice(1) : block;
-			file = core.path.app( `blocks/*/${block}/img/symbol/${icon}.svg` );
+    let icon = id ? id.split('__')[1] : '',
+      block = id ? id.split('__')[0] : '',
+      file;
 
-			if ( core.used.symbol.indexOf( file ) === -1  ) core.used.symbol.push( file );
+    if (!icon || !block) return;
 
-	});
+    block = block.charAt(0) === '#' ? block.slice(1) : block;
+    file = core.path.app(`blocks/*/${block}/img/symbol/${icon}.svg`);
 
+    if (core.used.symbol.indexOf(file) === -1) core.used.symbol.push(file);
 
-	// Add assets from config
+  });
 
-	let usedAssets = Array.isArray( core.config.use.assets ) ? core.config.use.assets : [core.config.use.assets];
 
-	usedAssets.forEach( ( item ) => {
+  // Add assets from config
 
-		if ( typeof item !== 'string' ) return;
+  let usedAssets = Array.isArray(core.config.use.assets) ? core.config.use.assets : [core.config.use.assets];
 
-		let file, block = item.split( core.path.SEP )[0];
+  usedAssets.forEach((item) => {
 
-			item = item.replace( block, block + core.path.SEP + 'assets' );
+    if (typeof item !== 'string') return;
 
-			file = core.path.blocks( core.path.join( '*', item ) );
+    let file, block = item.split(core.path.SEP)[0];
 
-			if ( core.used.assets.indexOf( file ) === -1 ) core.used.assets.push( file );
+    item = item.replace(block, block + core.path.SEP + 'assets');
 
-	});
+    file = core.path.blocks(core.path.join('*', item));
 
+    if (core.used.assets.indexOf(file) === -1) core.used.assets.push(file);
 
-	// Update assets
+  });
 
-	if ( core.used.styles.length > 0 ) core.used.assets.push(
-		core.path.blocks( `*/*/assets/{${core.used.styles.join( ',' )}}` )
-	);
-	
-	if ( core.used.scripts.length > 0 ) core.used.assets.push(
-		core.path.blocks( `*/*/assets/{${core.used.scripts.join( ',' )}}` )
-	);
 
+  // Update assets
 
-	// Sort levels
+  if (core.used.styles.length > 0) core.used.assets.push(
+    core.path.blocks(`*/*/assets/{${core.used.styles.join(',')}}`)
+  );
 
-	core.readDir( core.path.BLOCKS ).forEach( ( level ) => {
+  if (core.used.scripts.length > 0) core.used.assets.push(
+    core.path.blocks(`*/*/assets/{${core.used.scripts.join(',')}}`)
+  );
 
-		if ( core.isDirectory( core.path.blocks( level ) ) ) core.levels.push( level );
 
-	});
+  // Sort levels
 
-	core.levels.sort( ( one, two ) => {
+  core.readDir(core.path.BLOCKS).forEach((level) => {
 
-		let a = core.config.levels[one] || 2,
-			b = core.config.levels[two] || 2;
+    if (core.isDirectory(core.path.blocks(level))) core.levels.push(level);
 
-			if ( a > b ) return 1;
-			if ( a < b ) return -1;
-	});
+  });
 
+  core.levels.sort((one, two) => {
 
-	// Auto create files
+    let a = core.config.levels[one] || 2,
+      b = core.config.levels[two] || 2;
 
-	if ( core.config.autoCreate ) {
+    if (a > b) return 1;
+    if (a < b) return -1;
+  });
 
-		Object.keys( core.tree.app ).forEach( ( node ) => {
 
-			if ( core.isIgnoreNode( node ) ) return;
+  // Auto create files
 
-			let block = core.bem.getBlock( node ),
-				levels = core.config.autoCreateCheckLevels,
-				nodes = [node].concat( core.tree.app[node] ),
-				checkNodes = [],
-				add = {};
+  if (core.config.autoCreate) {
 
-				nodes.forEach( ( el ) => {
+    Object.keys(core.tree.app).forEach((node) => {
 
-					if ( ! core.isIgnoreNode( el ) ) checkNodes.push( el );
+      if (core.isIgnoreNode(node)) return;
 
-				});
+      let block = core.bem.getBlock(node),
+        levels = core.config.autoCreateCheckLevels,
+        nodes = [node].concat(core.tree.app[node]),
+        checkNodes = [],
+        add = {};
 
-				add = {
-					style: checkNodes,
-					script: checkNodes,
-					template: checkNodes
-				};
+      nodes.forEach((el) => {
 
-				if ( levels.length > 0 ) {
+        if (!core.isIgnoreNode(el)) checkNodes.push(el);
 
-					let ignore = {
-						style: [],
-						script: [],
-						template: []
-					};
+      });
 
-					let extnames = {
-						style: core.config.extnames.styles,
-						script: core.config.extnames.scripts,
-						template: core.config.extnames.templates
-					};
+      add = {
+        style: checkNodes,
+        script: checkNodes,
+        template: checkNodes
+      };
 
-					levels.forEach( ( level ) => {
+      if (levels.length > 0) {
 
-						checkNodes.forEach( ( el ) => {
+        let ignore = {
+          style: [],
+          script: [],
+          template: []
+        };
 
-							let dir = core.path.blocks( core.path.join( level, block ) );
+        let extnames = {
+          style: core.config.extnames.styles,
+          script: core.config.extnames.scripts,
+          template: core.config.extnames.templates
+        };
 
-							Object.keys( add ).forEach( ( key ) => {
+        levels.forEach((level) => {
 
-								let file = core.path.join( dir, el + extnames[key] );
+          checkNodes.forEach((el) => {
 
-									if ( core.checkFile( file ) && ignore[key].indexOf( el ) === -1 ) ignore[key].push( el );
-							});
+            let dir = core.path.blocks(core.path.join(level, block));
 
-						});
+            Object.keys(add).forEach((key) => {
 
-					});
+              let file = core.path.join(dir, el + extnames[key]);
 
-					Object.keys( add ).forEach( ( key ) => {
-						add[key] = [].concat( checkNodes.filter( val => ignore[key].indexOf( val ) < 0 ) );
-					});
+              if (core.checkFile(file) && ignore[key].indexOf(el) === -1) ignore[key].push(el);
+            });
 
-				}
+          });
 
-				Object.keys( add ).forEach( ( key ) => {
-					if ( core.config.autoCreateAdd.indexOf( key ) !== -1 ) core.addFile( add[key], key );
-				});
+        });
 
-		});
+        Object.keys(add).forEach((key) => {
+          add[key] = [].concat(checkNodes.filter(val => ignore[key].indexOf(val) < 0));
+        });
 
-	}
+      }
 
+      Object.keys(add).forEach((key) => {
+        if (core.config.autoCreateAdd.indexOf(key) !== -1) core.addFile(add[key], key);
+      });
 
-	return ( cb ) => cb();
+    });
 
+  }
 
+  return (cb) => cb();
 };

@@ -17,13 +17,6 @@ module.exports = {
 		jquery: true
 	},
 
-	extnames: {
-    templates: '.html',
-    styles: '.css',
-    scripts: '.js',
-    json: '.json',
-    readme: '.md'
-	},
 
 	dist: {
 		styles: 'styles',

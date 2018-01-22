@@ -24,7 +24,7 @@ block content
                         +icon({e: '&'})(xlink:href=`#${BEMPUG.getCurrentBlock()}__${item.icon}`)
                         +b('title',{e: '&', m: 'size-s', t: 'h2'})= item.title
                         +b( 'paragraph', {t: 'p'} )= item.text
-            //+e( 'cards' )
+            +e( 'cards' )
                 each item in global.blocks.card
                     +b( 'card' )
                         +e( 'image' )
