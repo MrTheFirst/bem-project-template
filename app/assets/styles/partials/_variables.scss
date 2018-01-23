@@ -1,0 +1,84 @@
+@import '../../../../node_modules/bootstrap/scss/_functions.scss'; // bootstrap grid dependency
+
+// Colors
+$dark:                        #1b1e27;
+$light:                       #ffffff;
+$pale-grey:                   #f4f7fb;
+$silver:                      #d8dbdf;
+$cool-grey:                   #9195a0;
+$slate-grey:                  #626878;
+$charcoal-grey:               #3b4256;
+$dusky-blue:                  #4d5d9d;
+$soft-green:                  #81c784;
+$dusty-orange:                #eb5a4d;
+$cornflower-blue:             #4a65ce;
+
+// Bootstrap grid settings
+$enable-grid-classes: true;
+
+// Grid breakpoints
+//
+// Define the minimum dimensions at which your layout will change,
+// adapting to different screen sizes, for use in media queries.
+$grid-breakpoints: (
+        xs: 0,
+        sm: 576px,
+        md: 768px,
+        lg: 992px,
+        xl: 1200px
+) !default;
+@include _assert-ascending($grid-breakpoints, "$grid-breakpoints");
+@include _assert-starts-at-zero($grid-breakpoints);
+
+// Grid containers
+//
+// Define the maximum width of `.container` for different screen sizes.
+$container-max-widths: (
+        sm: 540px,
+        md: 720px,
+        lg: 960px,
+        xl: 1184px
+) !default;
+@include _assert-ascending($container-max-widths, "$container-max-widths");
+
+// Grid columns
+//
+// Set the number of columns and specify the width of the gutters.
+$grid-columns:                12 !default;
+$grid-gutter-width:           32px !default;
+
+/*
+  Typography
+  Font, line-height, and color for body text, headings, and more.
+*/
+
+$font-family-sans-serif:  "HelveticaNeueCyr", Helvetica, sans-serif !default;
+$font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+$font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace !default;
+$font-family-base:        $font-family-sans-serif !default;
+
+$font-size-base:          14px !default;
+$font-size-normal:        16px !default;
+$font-size-medium:        18px !default;
+$font-size-big:           20px !default;
+$font-size-small:         12px !default;
+$font-size-ultra-small:   ceil(($font-size-base * 0.72)) !default; // ~10px
+
+$font-size-h1:            floor(($font-size-base * 2.6)) !default; // ~36px
+$font-size-h2:            32px !default;
+$font-size-h3:            ceil(($font-size-base * 1.57)) !default; // ~24px
+$font-size-h4:            ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-h5:            $font-size-base !default;
+$font-size-h6:            ceil(($font-size-base * 0.85)) !default; // ~12px
+
+//** Unit-less `line-height` for use in components like buttons.
+$line-height-base:        1.428571429 !default; // 20/14
+//** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
+$line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
+
+//** By default, this inherits from the `<body>`.
+$headings-font-family:    inherit !default;
+$headings-font-weight:    500 !default;
+$headings-line-height:    1.1 !default;
+$headings-color:          inherit !default;

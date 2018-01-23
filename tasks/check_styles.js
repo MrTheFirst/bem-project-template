@@ -1,14 +1,13 @@
-
 'use strict';
-
 
 // Export
 
 module.exports = ( task, core ) => {
 
 
-	let imports = {}, helper = 'global' + core.config.extnames.styles,
-		relative = core.path.relative( core.path.TEMP, core.path.BLOCKS );
+	let imports = {};
+  let common = '/styles/common' + core.config.extnames.styles;
+  let relative = core.path.relative( core.path.TEMP, core.path.BLOCKS );
 
 
 	// Check files
@@ -31,15 +30,15 @@ module.exports = ( task, core ) => {
 				if ( core.checkFile( core.path.blocks( el ) ) ) {
 
 					let file = core.path.join( relative, el );
-					
+
 						if ( imports[ page ].indexOf( file ) === -1 ) imports[ page ].push( file );
 				}
 
 				if ( core.config.extnames.styles !== '.css' && core.checkFile( core.path.blocks( css ) ) ) {
 
 					let file = core.path.join( relative, css );
-					
-						if ( imports[ page ].indexOf( file ) === -1 ) imports[ page ].push( file );					
+
+						if ( imports[ page ].indexOf( file ) === -1 ) imports[ page ].push( file );
 				}
 
 				core.tree[page][key].forEach( ( mod ) => {
@@ -50,15 +49,15 @@ module.exports = ( task, core ) => {
 					if ( core.checkFile( core.path.blocks( elMod ) ) ) {
 
 						let file = core.path.join( relative, elMod );
-						
+
 							if ( imports[ page ].indexOf( file ) === -1 ) imports[ page ].push( file );
 					}
 
 					if ( core.config.extnames.styles !== '.css' && core.checkFile( core.path.blocks( cssMod ) ) ) {
 
 						let file = core.path.join( relative, cssMod );
-						
-							if ( imports[ page ].indexOf( file ) === -1 ) imports[ page ].push( file );					
+
+							if ( imports[ page ].indexOf( file ) === -1 ) imports[ page ].push( file );
 					}
 
 				});
@@ -70,23 +69,20 @@ module.exports = ( task, core ) => {
 	});
 
 
-	// Check helper
+	// Check common
 
-	helper = core.checkFile( core.path.blocks( helper ) ) ? `@import '${core.path.join( relative, helper )}';` : false;
-
+	common = core.checkFile( core.path.assets( common ) ) ? `@import '${core.path.assets( common )}';` : false;
 
 	// Write files
 
 	Object.keys( imports ).forEach( ( page ) => {
 
-		let content = ( typeof helper === 'string' ) ? helper.replace( /\\/g, '\/' ) : '',
+		let content = ( typeof common === 'string' ) ? common.replace( /\\/g, '\/' ) : '',
 			file = core.path.temp( page + core.config.extnames.styles );
 
 			imports[page].forEach( ( key ) => {
 
-				let prefix = core.config.extnames.styles === '.less' ? ' (less)' : '';
-
-					content += `${content === '' ? '' : '\n'}@import${prefix} '${key.replace( /\\/g, '\/' )}';`;
+					content += `${content === '' ? '' : '\n'}@import '${key.replace( /\\/g, '\/' )}';`;
 			});
 
 			core.writeFile( file, content );

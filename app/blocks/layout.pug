@@ -3,6 +3,7 @@
 //- Include helpers
 
 include /node_modules/bempug/index
+- BEMPUG.modifier = '_';
 include /core/temp/blocks
 
 
@@ -48,21 +49,21 @@ else
 
 			- page.styles.unshift( ( global.options.cssBundles ? page.path : 'app' ) + ( global.isDevelopment ? '.css' : '.min.css' ) );
 
-			// Styles 
+			// Styles
 			each href in page.styles
 				link(rel='stylesheet' href=( BEMPUG.isExternal( href ) ? href : global.paths.styles + '/' + href ))
 
 			if global.app.preloader
 				= n
 
-				// Hide preloader if no JS 
+				// Hide preloader if no JS
 				noscript: style .page__preloader{display:none;}
 
 
 			if !global.isDevelopment && global.head.favicons
 				= n
 
-				// Favicons 
+				// Favicons
 				link(rel='shortcut icon' href=`${global.paths.favicons}/favicon.ico` type='image/x-icon')
 
 				each icon in ['16x16','32x32','96x96','230x230']
@@ -88,21 +89,21 @@ else
 
 				//- The SVG file must be a single layer and the viewBox attribute must be set to "0 0 16 16".
 
-				// Safari Pinned Tab Icon 
+				// Safari Pinned Tab Icon
 				link(rel='mask-icon' href=`${global.paths.favicons}/safari-pinned-tab.svg` color=global.head.safariPinned)
 
 
 			if !global.isDevelopment && global.head.manifest
 				= n
 
-				// Manifest 
+				// Manifest
 				link(rel='manifest' href=`${global.paths.favicons}/manifest.json`)
 
 
 			if !global.isDevelopment && global.head.msapplication
 				= n
 
-				// For Windows 
+				// For Windows
 				meta(name='application-name' content=global.app.name)
 				meta(name='msapplication-tooltip' content=global.app.description)
 				meta(name='msapplication-starturl' content=`http://${global.app.domain}/`)
@@ -122,9 +123,11 @@ else
 			if global.app.preloader
 
 				= nn
-				// Preloader 
+				// Preloader
 				+b( 'preloader', {e: '&|active'} )
 
+			//- Svg sprite
+			#svg-sprite(data-src=global.paths.img + '/' + 'sprites.svg')
 
 			//- Content
 
@@ -136,7 +139,7 @@ else
 
 			if global.app.jquery
 
-				// jQuery 
+				// jQuery
 				script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
 
 				= n
@@ -144,7 +147,7 @@ else
 			- page.scripts.push( ( global.options.jsBundles ? page.path : 'app' ) + ( global.isDevelopment ? '.js' : '.min.js' ) );
 
 
-			// Scripts 
+			// Scripts
 			each src in page.scripts
 				script(src=( BEMPUG.isExternal( src ) ? src : global.paths.scripts + '/' + src ))
 

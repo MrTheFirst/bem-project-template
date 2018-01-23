@@ -1,0 +1,70 @@
+@import "normalize";
+@import "partials/variables";
+@import "partials/_bootstrap-grid.scss";
+@import "partials/_sprite.scss";
+@import "partials/_fonts.scss";
+@import "partials/_mixins.scss";
+
+
+html, body {
+  overflow-x: hidden;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'GOSTUI2', 'SF Pro Display', Arial, serif;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+  color: #505053;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+$headings: h6, h5, h4, h3, h2, h1;
+@each $heading in $headings {
+  #{$heading} {
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    text-decoration: inherit;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#svg-sprite {
+  display: none;
+  opacity: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

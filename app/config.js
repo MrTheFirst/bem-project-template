@@ -17,13 +17,6 @@ module.exports = {
 		jquery: true
 	},
 
-	extnames: {
-    templates: '.html',
-    styles: '.css',
-    scripts: '.js',
-    json: '.json',
-    readme: '.md'
-	},
 
 	dist: {
 		styles: 'styles',
@@ -42,6 +35,6 @@ module.exports = {
 
 	autoCreate: true,
 	autoCreateAdd: [ 'style' ],
-	autoCreateIgnore: [ 'html' ]
+	autoCreateIgnore: [ 'html', /col-/i, 'row', 'container', /flex-/i, /align-/i, /justify-/i, /no-gutters/i, /order-/i, /offset-/i, /\S+-symbol/g ]
 
 };
