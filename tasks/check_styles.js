@@ -6,7 +6,7 @@ module.exports = ( task, core ) => {
 
 
 	let imports = {};
-  let helper = '/styles/common' + core.config.extnames.styles;
+  let common = '/styles/common' + core.config.extnames.styles;
   let relative = core.path.relative( core.path.TEMP, core.path.BLOCKS );
 
 
@@ -69,19 +69,18 @@ module.exports = ( task, core ) => {
 	});
 
 
-	// Check helper
+	// Check common
 
-	helper = core.checkFile( core.path.assets( helper ) ) ? `@import '${core.path.assets( helper )}';` : false;
+	common = core.checkFile( core.path.assets( common ) ) ? `@import '${core.path.assets( common )}';` : false;
 
 	// Write files
 
 	Object.keys( imports ).forEach( ( page ) => {
 
-		let content = ( typeof helper === 'string' ) ? helper.replace( /\\/g, '\/' ) : '',
+		let content = ( typeof common === 'string' ) ? common.replace( /\\/g, '\/' ) : '',
 			file = core.path.temp( page + core.config.extnames.styles );
 
 			imports[page].forEach( ( key ) => {
-
 
 					content += `${content === '' ? '' : '\n'}@import '${key.replace( /\\/g, '\/' )}';`;
 			});

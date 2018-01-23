@@ -4,7 +4,8 @@
 // Require
 
 const gulp = require('gulp');
-
+const cheerio = require('gulp-cheerio');
+const replace = require('gulp-replace');
 
 // Export
 
@@ -12,26 +13,37 @@ module.exports = (task, core) => {
 
 
   core.symbol = false;
+  // task.src = core.isDevelopment ? [core.path.blocks('*/*/img/symbol/*.svg')] : core.used.symbol;
+  task.src = core.path.blocks('*/*/img/symbol/*.svg');
 
-  task.src = core.isDevelopment ? [core.path.blocks('*/*/img/symbol/*.svg')] : core.used.symbol;
+  task.clear = {
+    run: function ($) {
+      $('[fill]').removeAttr('fill');
+      $('[stroke]').removeAttr('stroke');
+      $('[style]').removeAttr('style');
+    },
+    parserOptions: {xmlMode: true}
+  };
 
   task.data = {
-
     shape: {
       id: {
         generator: (name, file) => {
-
           let array = name.split(core.path.SEP);
           return array[array.length - 4] + '__' + core.getBasename(name);
         }
       }
     },
-
     mode: {
       symbol: {
         dest: core.path.IMG,
         sprite: 'sprites.svg',
-        render: false,
+        render: {
+          scss: {
+            dest: '../../app/assets/styles/partials/_sprite.scss',
+            template: "app/assets/styles/partials/_sprite-template.scss"
+          }
+        },
         svg: {
           xmlDeclaration: false,
           doctypeDeclaration: false,
@@ -42,9 +54,7 @@ module.exports = (task, core) => {
         }
       }
     }
-
   };
-
   task.dest = (file) => {
 
     core.symbol = `./${core.path.join(core.config.dist.img, task.data.mode.symbol.sprite)}?ver=${new Date().getTime()}`;
@@ -56,9 +66,10 @@ module.exports = (task, core) => {
   return (cb) => {
 
     if (!task.src.length > 0) return cb();
-
     return gulp.src(task.src)
       .pipe(require('gulp-plumber')(core.errorHandler))
+      .pipe(cheerio(task.clear))
+      .pipe(replace('&gt;', '>'))
       .pipe(require('gulp-svg-sprite')(task.data))
       .pipe(gulp.dest(task.dest));
 

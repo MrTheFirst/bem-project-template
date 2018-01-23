@@ -10,16 +10,12 @@ const gulp = require( 'gulp' );
 // Export
 
 module.exports = ( task, core ) => {
-	task.src = core.isDevelopment ? [
 
-		core.path.blocks( '*/*/img/*.{png,jpg,jpeg,svg,gif,ico}' ),
-		core.path.blocks( '*/*/img/sprite/*.{png,jpg,jpeg,svg,gif,ico}' )
-
-	] : core.used.imgs;
-	// task.src = [
+	// task.src = core.isDevelopment ? [
 	// 	core.path.blocks( '*/*/img/*.{png,jpg,jpeg,svg,gif,ico}' ),
 	// 	core.path.blocks( '*/*/img/sprite/*.{png,jpg,jpeg,svg,gif,ico}' )
-	// ];
+	// ] : core.used.imgs;
+  task.src = core.used.imgs;
 
 	task.dest = ( file ) => {
 
@@ -31,9 +27,7 @@ module.exports = ( task, core ) => {
 				file.path = core.path.join( file.base, 'sprite_' + array[ array.length - 4 ] + '_' + name );
 
 			} else {
-
 				file.path = core.path.join( file.base, array[ array.length - 3 ] + '_' + name );
-
 			}
 
 			return core.path.IMG;

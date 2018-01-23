@@ -94,7 +94,7 @@ module.exports = {
 
 	autoCreate: false,
 	autoCreateAdd: [],
-	autoCreateIgnore: [ 'symbol' ],
+	autoCreateIgnore: [ 'symbol'],
 	autoCreateCheckLevels: [],
 
 	assetsAttr: [ 'href', 'src', 'srcset' ]

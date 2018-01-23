@@ -1,7 +1,12 @@
 mixin header( bem )
-
 	+b( 'header', bem, 'header' )&attributes(attributes)
-		+e( 'layout', {p: 'page'} )
-			+b( 'logo' ) bemgo
-
+		+e( 'top-block' )
+			.container
+				.row.justify-content-between
+					+b('link', 'iconed.theme-opacity', 'a')(href='#')
+						+e('text') Версия для слабовидящих
+						+icon({e:'&'})(class='glasses-symbol')
+					+b('link', 'iconed.theme-liveplay', 'a')(href='#')
+						+icon({e: '&'})(class='liveplay-symbol')
+						+e('text') Прямая трансляция
 		block

@@ -31,7 +31,7 @@ module.exports = ( task, core ) => {
 	};
 
 	task.src = core.path.pages( '*' + core.config.extnames.templates );
-	
+
 	task.dest = core.path.DIST;
 
 
@@ -70,10 +70,9 @@ module.exports = ( task, core ) => {
 			pretty: '\t',
 			basedir: core.path.ROOT,
 			data: {
-				global: globalData
-			}
+				global: globalData,
+			},
 		};
-
 		task.data.data.global.newLine = task.data.pretty ? '\n' : '';
 
 		task.dest = core.prettyFix; // https://github.com/werty1001/bempug/issues/1

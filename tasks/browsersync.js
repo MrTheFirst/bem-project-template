@@ -21,7 +21,8 @@ module.exports = ( task, core ) => {
 			rule: {
 				match: /<\/body>/i
 			}
-		}
+		},
+    browser: "google chrome"
 
 	});
 

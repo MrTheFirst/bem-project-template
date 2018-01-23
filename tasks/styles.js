@@ -50,7 +50,7 @@ module.exports = (task, core) => {
   // Sass
   task.require = require('gulp-sass')({
     includePaths: [normalize.includePaths, path.resolve('bootstrap/scss')],
-    // importer: core.sassResolver
+    importer: core.sassResolver
   });
 
   // PostCSS

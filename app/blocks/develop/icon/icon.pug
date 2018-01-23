@@ -1,4 +1,4 @@
 mixin icon(bem)
-    +b('icon', bem, 'svg')
-        use&attributes(attributes)
-
+    -var parentBlock = BEMPUG.getCurrentBlock()
+    +b('icon', bem, 'svg')(class=`${parentBlock}__${attributes.class}`)
+        use(xlink:href=`#${parentBlock}__${attributes.class}`)
